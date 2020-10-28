@@ -27,6 +27,7 @@ with open('out.txt', 'r') as f:
         out = re.findall(find_one, line)
         if out != []:
             out_list.append(out)
+os.remove('out.txt')
 options = {
     'page-size': 'A4',
     'margin-top': '0.1in',
@@ -41,7 +42,7 @@ options = {
         ('cookie-name1', 'cookie-value1'),
         ('cookie-name2', 'cookie-value2'),
     ],
-    'outline-depth': 10,
+    'outline-depth': 30,
     "dpi": 196
 }
 
@@ -61,9 +62,9 @@ html_template = """
 
 def create_path():
     if not os.path.exists('pdf'):
-        os.mkdir('pdf')  # 创建pdf文件夹
+        os.makedirs('pdf')  # 创建pdf文件夹
 
-
+create_path()
 i = 0  # 生成文件名
 for out in out_list:
     res = requests.get(out[0])
@@ -71,10 +72,10 @@ for out in out_list:
     find_out = new_soup.find_all('div', 'extra-padding')  # 获取要转成pdf的内容
     find_out = str(find_out[0])
     html = find_out
-    # html = html_template.format(content=find_out)
+    html = html_template.format(content=find_out)
     html = html.encode("utf-8")
     with open('out.html', 'wb') as f:
         f.write(html)
-    pdfkit.from_file('out.html', 'pdf/' + 'out' + str(i) + '.pdf')  # html转pdf
+    pdfkit.from_file('out.html', 'pdf/' + 'out' + str(i) + '.pdf',options=options)  # html转pdf
     i += 1
     os.remove('out.html')
