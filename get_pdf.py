@@ -10,6 +10,7 @@ import os  # 导入文件操作库
 from bs4 import BeautifulSoup  # 导入html处理库
 import re  # 正则库
 import pdfkit  # 用于html转pdf
+import PyPDF4
 
 pic_path = 'https://learnku.com/docs/pymotw'  # 爬网页地址
 
@@ -79,3 +80,13 @@ for out in out_list:
     pdfkit.from_file('out.html', 'pdf/' + 'out' + str(i) + '.pdf',options=options)  # html转pdf
     i += 1
     os.remove('out.html')
+
+def sort_key(name):#按名称排序文件合并
+    return int(re.findall(r'(\d+)',name)[0])
+files=os.listdir('pdf')
+files.sort(key=lambda x:sort_key(x))
+pdf_all=PyPDF4.PdfFileMerger()
+for file in files:#合并文件
+    pdf_all.append('pdf/'+file)
+pdf_all.write('pdf_all.pdf')
+pdf_all.close()
